@@ -1,0 +1,17 @@
+<NotepadPlus>
+    <Project name="Log">
+        <Folder name="public">
+            <File name="public\style.css" />
+        </Folder>
+        <Folder name="views">
+            <Folder name="layouts">
+                <File name="views\layouts\main.handlebars" />
+            </Folder>
+            <File name="views\404.handlebars" />
+            <File name="views\500.handlebars" />
+            <File name="views\home.handlebars" />
+        </Folder>
+        <File name="log.js" />
+        <File name="package.json" />
+    </Project>
+</NotepadPlus>

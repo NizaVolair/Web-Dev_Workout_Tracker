@@ -1,0 +1,119 @@
+{{results}}
+
+<h1>Workout Log</h1>
+
+<div>
+    <table>
+        <thead>
+	        <tr>
+	            <th>Exercises</th>
+	            <th>Repetitions</th>
+	            <th>Weights</th>
+	            <th>Dates</th>
+	            <th>Units</th>
+	        </tr>
+        </thead>
+        <tbody id='tBody'>
+        {{#each results}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>{{this.reps}}</td>
+                <td>{{this.weight}}</td>
+                <td>{{this.date}}</td>
+                <td>{{this.units}}</td>  
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<br>
+
+<div>
+	<form>
+		<fieldset>
+		  	<legend>What Exercise Did You Do?</legend>
+		  	<label for = 'name'>
+			  	<p> Exercise: <input type='text' name='name' id='name'>
+			</label>
+		  	<label for='reps'>
+			  	<p>	Repetitions: <input type='number' name='reps' id='reps'>
+			</label>
+		  	<label for='weight'>
+			  	<p>	Weight: <input type='number' name='weight' id='weight'>
+			</label>
+		  	<label for='date'>
+			  	<p> Date: <input type='date' name='date' id='date'>
+			</label>
+			<label for='lbs'>
+				<p> Pounds: <input type='radio' name='units' value='false' id='lbs'>
+			</label>
+			<label for='kgs'>
+				<p> Kilograms: <input type='radio' name='units' value='false' id='kgs'>
+			</label>
+			<label for='addEx'>
+				<p>Add Exercise to Table <input id='addEx' type='submit' value='Add'>
+			</label>
+		</fieldset>
+	</form>
+</div>
+
+<script>
+//event listener for the add button
+document.addEventListener('DOMContentLoaded', bindAddButton);
+
+function bindAddButton(){
+	
+	// Get user input
+    document.getElementById('addEx').addEventListener('click', function(event){
+        var req = new XMLHttpRequest();
+        var name = document.getElementById('name').value;
+        var reps = document.getElementById('reps').value;
+        var weight = document.getElementById('weight').value;
+        var date = document.getElementById('date').value;
+		if (document.getElementById('lbs').checked){
+			lbs = 1;
+		}
+		else {
+			lbs = 0;
+		}
+		// Send via get to store/retrieve from database
+        req.open('GET', 'http://52.24.115.207:3000/insert?name=' + name + '&reps=' + reps + '&weight=' + weight + '&date=' + date + '&lbs=' + lbs);
+		// When request is finished, parse results and add to DOM
+        req.addEventListener('load', function(){
+            if (req.status >= 200 && req.status < 400) {
+                var results = JSON.parse(req.responseText);
+				if(results.units == 1){
+					results.units = "pounds";
+				}
+				else{
+					results.units = "kilograms";
+				}
+				var row = makeRow(results);
+		        var tBody = document.getElementById('tBody');
+                    tBody.appendChild(row);
+                }
+            else {
+                console.log("Error in network request " + req.statusText);
+            }
+        });
+        req.send(null);
+        event.preventDefault();
+    });
+}
+
+//Helper function to create a new row
+function makeRow(r){
+	var head = Object.keys(r[0]);
+	var row = document.createElement('tr');
+	var count = r.length - 1;
+	for(var j = 1; j < head.length; j++){
+		var cell = document.createElement('td');
+		var col = head[j];
+		cell.textContent = r[count][col];
+		row.appendChild(cell);
+	}
+	return row;
+};
+
+</script>
